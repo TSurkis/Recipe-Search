@@ -1,6 +1,6 @@
 package com.tsurkis.recipesearch.data.remote.api
 
-import com.tsurkis.recipesearch.data.remote.models.RecipeSearchResponse
+import com.tsurkis.recipesearch.data.remote.model.RecipeSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tsurkis.recipesearch.R
 import com.tsurkis.recipesearch.custom.wrappers.ImageLoader
-import com.tsurkis.recipesearch.data.repository.models.Recipe
+import com.tsurkis.recipesearch.data.repository.model.Recipe
 import kotlinx.android.synthetic.main.item_recipe.view.*
 
 class RecipeAdapter : ListAdapter<Recipe, RecipeViewHolder>(RecipeDataComparator()) {

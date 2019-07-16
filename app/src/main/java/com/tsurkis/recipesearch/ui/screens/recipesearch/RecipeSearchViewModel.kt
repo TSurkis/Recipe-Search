@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsurkis.recipesearch.app.ThreadManager
 import com.tsurkis.recipesearch.data.repository.RecipeRepository
-import com.tsurkis.recipesearch.data.repository.models.Recipe
+import com.tsurkis.recipesearch.data.repository.model.Recipe
 
 class RecipeSearchViewModel : ViewModel() {
 
@@ -15,25 +15,35 @@ class RecipeSearchViewModel : ViewModel() {
         private set
 
     init {
-        recipesSearchUIState.postValue(RecipesSearchUIState())
-        recipes.postValue(listOf())
+        runOnBackThread {
+            RecipeRepository
+                .instance
+                .getRecipes(
+                    onSuccess = ::onRecipesRetrievedSuccessfully,
+                    onFailure = ::onRecipesRetrievalFailure
+                )
+        }
     }
 
     fun searchRecipes(queryString: String?) {
         queryString ?: return
         this.recipesSearchUIState.value = RecipesSearchUIState(showLoader = true)
+        runOnBackThread {
+            RecipeRepository
+                .instance
+                .getRecipes(
+                    queryString = queryString,
+                    onSuccess = ::onRecipesRetrievedSuccessfully,
+                    onFailure = ::onRecipesRetrievalFailure
+                )
+        }
+    }
+
+    private fun runOnBackThread(runnableBlock: () -> (Unit)) {
         ThreadManager
             .instance
             .ioThread
-            .execute {
-                RecipeRepository
-                    .instance
-                    .searchRecipes(
-                        queryString = queryString,
-                        onSuccess = ::onRecipesRetrievedSuccessfully,
-                        onFailure = ::onRecipesRetrievalFailure
-                    )
-            }
+            .execute(runnableBlock)
     }
 
     private fun onRecipesRetrievedSuccessfully(recipes: List<Recipe>) {
@@ -41,7 +51,8 @@ class RecipeSearchViewModel : ViewModel() {
         this.recipesSearchUIState.postValue(
             RecipesSearchUIState(
                 showLoader = false,
-                shouldDisplaySearchList = true
+                shouldDisplaySearchList = true,
+                shouldShowSearch = recipes.isNotEmpty()
             )
         )
     }

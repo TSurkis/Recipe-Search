@@ -1,4 +1,4 @@
-package com.tsurkis.recipesearch.data.repository.models
+package com.tsurkis.recipesearch.data.repository.model
 
 data class Recipe(
     val name: String,

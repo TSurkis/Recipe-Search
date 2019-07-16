@@ -1,9 +1,9 @@
 package com.tsurkis.recipesearch.data.remote.api
 
 import com.tsurkis.recipesearch.data.remote.core.RetrofitClient
-import com.tsurkis.recipesearch.data.remote.models.RecipeSearchResponse
-import com.tsurkis.recipesearch.data.repository.models.Recipe
-import com.tsurkis.recipesearch.data.repository.models.RecipeModelConverter
+import com.tsurkis.recipesearch.data.remote.model.RecipeSearchResponse
+import com.tsurkis.recipesearch.data.repository.model.Recipe
+import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,7 +29,7 @@ class RecipeSearchAPI private constructor() {
                     response
                         .body()
                         ?.let { recipeSearchResponse ->
-                            onSuccess(recipeModelConverter.from(recipeSearchResponse.recipes))
+                            onSuccess(recipeModelConverter.fromServerModels(recipeSearchResponse.recipes))
                         }
                         ?: onFailure(Throwable())
                 }

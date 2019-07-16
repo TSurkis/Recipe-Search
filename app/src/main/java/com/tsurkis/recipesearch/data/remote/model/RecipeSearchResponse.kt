@@ -1,4 +1,4 @@
-package com.tsurkis.recipesearch.data.remote.models
+package com.tsurkis.recipesearch.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 

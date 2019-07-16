@@ -30,20 +30,17 @@ class RecipeSearchActivity : AppCompatActivity() {
     }
 
     private fun initializeUI() {
-        recipeSearchView.apply {
-            setIconifiedByDefault(false)
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(queryString: String?): Boolean {
-                    viewModel.searchRecipes(queryString)
-                    return false
-                }
+        recipeSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(queryString: String?): Boolean {
+                viewModel.searchRecipes(queryString)
+                return false
+            }
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    // Ignore for easier data manipulation
-                    return false
-                }
-            })
-        }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Ignore for easier data manipulation
+                return false
+            }
+        })
     }
 
     private fun initializeUIStateObservation() {
@@ -69,6 +66,8 @@ class RecipeSearchActivity : AppCompatActivity() {
             } else {
                 View.GONE
             }
+
+        recipeSearchView.setIconifiedByDefault(uiState.shouldShowSearch)
 
         if (uiState.shouldDisplayError) {
             Toast.makeText(this, uiState.errorText, Toast.LENGTH_LONG).show()
