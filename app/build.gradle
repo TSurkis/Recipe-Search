@@ -34,10 +34,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Tests
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+
+    // Kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     // Android-Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
