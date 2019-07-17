@@ -26,7 +26,7 @@ class RecipeSearchViewModel : ViewModel() {
     }
 
     fun searchRecipes(queryString: String?) {
-        queryString ?: return
+        if (queryString.isNullOrBlank()) return
         this.recipesSearchUIState.value = RecipesSearchUIState(showLoader = true)
         runOnBackThread {
             RecipeRepository
