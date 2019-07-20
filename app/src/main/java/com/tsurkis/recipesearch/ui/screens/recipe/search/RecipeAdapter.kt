@@ -1,4 +1,4 @@
-package com.tsurkis.recipesearch.ui.screens.recipesearch
+package com.tsurkis.recipesearch.ui.screens.recipe.search
 
 import android.view.LayoutInflater
 import android.view.View

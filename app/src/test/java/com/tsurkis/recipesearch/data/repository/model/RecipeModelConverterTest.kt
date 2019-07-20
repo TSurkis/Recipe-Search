@@ -1,4 +1,4 @@
-package com.tsurkis.recipesearch.repository.model
+package com.tsurkis.recipesearch.data.repository.model
 
 import com.tsurkis.recipesearch.data.local.model.RecipeLocalModel
 import com.tsurkis.recipesearch.data.remote.model.RecipeServerModel

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.tsurkis.recipesearch.data.local.api.DatabaseNames.recipeTable
 
 @Entity(tableName = recipeTable)
-class RecipeLocalModel(
+data class RecipeLocalModel(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
     val id: Int,

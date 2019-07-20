@@ -1,4 +1,4 @@
-package com.tsurkis.recipesearch.ui.screens.recipesearch
+package com.tsurkis.recipesearch.ui.screens.recipe.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,7 +27,8 @@ class RecipeSearchViewModel : ViewModel() {
 
     fun searchRecipes(queryString: String?) {
         if (queryString.isNullOrBlank()) return
-        this.recipesSearchUIState.value = RecipesSearchUIState(showLoader = true)
+        this.recipesSearchUIState.value =
+            RecipesSearchUIState(showLoader = true)
         runOnBackThread {
             RecipeRepository
                 .instance
