@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_side_padding">16dp</dimen>
+    <dimen name="item_top_padding">8dp</dimen>
+    <dimen name="text_item_padding">8dp</dimen>
+    <dimen name="general_card_elevation">8dp</dimen>
+</resources>
