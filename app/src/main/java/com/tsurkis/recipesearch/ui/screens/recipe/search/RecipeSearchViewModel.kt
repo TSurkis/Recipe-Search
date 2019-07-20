@@ -2,11 +2,14 @@ package com.tsurkis.recipesearch.ui.screens.recipe.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tsurkis.recipesearch.app.ThreadManager
 import com.tsurkis.recipesearch.data.repository.RecipeRepository
 import com.tsurkis.recipesearch.data.repository.model.Recipe
+import java.util.concurrent.Executor
 
-class RecipeSearchViewModel : ViewModel() {
+class RecipeSearchViewModel(
+    private val backThread: Executor,
+    private val recipeRepository: RecipeRepository
+) : ViewModel() {
 
     var recipes: MutableLiveData<List<Recipe>> = MutableLiveData()
         private set
@@ -16,8 +19,7 @@ class RecipeSearchViewModel : ViewModel() {
 
     init {
         runOnBackThread {
-            RecipeRepository
-                .instance
+            recipeRepository
                 .getRecipes(
                     onSuccess = ::onRecipesRetrievedSuccessfully,
                     onFailure = ::onRecipesRetrievalFailure
@@ -30,8 +32,7 @@ class RecipeSearchViewModel : ViewModel() {
         this.recipesSearchUIState.value =
             RecipesSearchUIState(showLoader = true)
         runOnBackThread {
-            RecipeRepository
-                .instance
+            recipeRepository
                 .getRecipes(
                     queryString = queryString,
                     onSuccess = ::onRecipesRetrievedSuccessfully,
@@ -41,10 +42,7 @@ class RecipeSearchViewModel : ViewModel() {
     }
 
     private fun runOnBackThread(runnableBlock: () -> (Unit)) {
-        ThreadManager
-            .instance
-            .ioThread
-            .execute(runnableBlock)
+        backThread.execute(runnableBlock)
     }
 
     private fun onRecipesRetrievedSuccessfully(recipes: List<Recipe>) {

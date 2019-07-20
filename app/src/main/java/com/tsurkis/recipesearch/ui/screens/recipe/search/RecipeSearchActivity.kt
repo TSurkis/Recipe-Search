@@ -10,19 +10,22 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.tsurkis.recipesearch.R
+import com.tsurkis.recipesearch.app.ViewModelFactory
+import com.tsurkis.recipesearch.injection.Injector
 import kotlinx.android.synthetic.main.activity_recipe_search.*
 
 class RecipeSearchActivity : AppCompatActivity() {
 
     private lateinit var viewModel: RecipeSearchViewModel
     private lateinit var recipeAdapter: RecipeAdapter
+    private val viewModelFactory: ViewModelFactory = Injector.provider().provideViewModelFactory()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipe_search)
         setSupportActionBar(toolbar)
 
-        viewModel = ViewModelProviders.of(this).get(RecipeSearchViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(RecipeSearchViewModel::class.java)
 
         initializeDataObservation()
         initializeUIStateObservation()

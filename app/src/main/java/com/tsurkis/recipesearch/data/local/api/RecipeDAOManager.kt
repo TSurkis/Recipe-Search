@@ -3,27 +3,23 @@ package com.tsurkis.recipesearch.data.local.api
 import com.tsurkis.recipesearch.data.repository.model.Recipe
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
 
-class RecipeDAOManager {
-    companion object {
-        val instance = RecipeDAOManager()
-    }
+interface RecipeDAOManager {
+    fun save(recipes: List<Recipe>)
+    fun retrieveLatest(): List<Recipe>
+}
 
-    private val converter: RecipeModelConverter = RecipeModelConverter()
+class RecipeDAOManagerImplementation(
+    private val dao: RecipeDAO,
+    private val converter: RecipeModelConverter
+) : RecipeDAOManager {
 
-    fun save(recipes: List<Recipe>) {
+    override fun save(recipes: List<Recipe>) {
         val recipeLocalModels = converter.toLocalModels(recipes)
-        DatabaseCore
-            .instance
-            .recipeDao
-            .insert(recipeLocalModels)
+        dao.insert(recipeLocalModels)
     }
 
-    fun retrieveLatest(): List<Recipe> {
-        val recipeLocalModels =
-            DatabaseCore
-                .instance
-                .recipeDao
-                .getLatestSearch()
+    override fun retrieveLatest(): List<Recipe> {
+        val recipeLocalModels = dao.getLatestSearch()
         return converter.fromLocalModels(recipeLocalModels)
     }
 }
