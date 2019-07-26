@@ -1,6 +1,7 @@
 package com.tsurkis.recipesearch.injection
 
 import com.tsurkis.recipesearch.BuildConfig
+import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPI
 import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPIImplementation
 import com.tsurkis.recipesearch.data.remote.api.TheMealDBAPI
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
@@ -40,13 +41,13 @@ class RemoteAPIModule {
             .client(okHttpClient)
             .build()
 
-    fun provideTheMealDBAPIAPI(retrofitClient: Retrofit): TheMealDBAPI =
+    fun provideTheMealDBAPI(retrofitClient: Retrofit): TheMealDBAPI =
         retrofitClient.create(TheMealDBAPI::class.java)
 
     fun provideRecipeSearchAPI(
         api: TheMealDBAPI,
         converter: RecipeModelConverter
-    ) =
+    ): RecipeSearchAPI =
         RecipeSearchAPIImplementation(
             api = api,
             converter = converter

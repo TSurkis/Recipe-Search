@@ -19,25 +19,22 @@ class RecipeSearchViewModel(
 
     init {
         runOnBackThread {
-            recipeRepository
-                .getRecipes(
-                    onSuccess = ::onRecipesRetrievedSuccessfully,
-                    onFailure = ::onRecipesRetrievalFailure
-                )
+            recipeRepository.getRecipes(
+                onSuccess = ::onRecipesRetrievedSuccessfully,
+                onFailure = ::onRecipesRetrievalFailure
+            )
         }
     }
 
     fun searchRecipes(queryString: String?) {
         if (queryString.isNullOrBlank()) return
-        this.recipesSearchUIState.value =
-            RecipesSearchUIState(showLoader = true)
+        this.recipesSearchUIState.value = RecipesSearchUIState(showLoader = true)
         runOnBackThread {
-            recipeRepository
-                .getRecipes(
-                    queryString = queryString,
-                    onSuccess = ::onRecipesRetrievedSuccessfully,
-                    onFailure = ::onRecipesRetrievalFailure
-                )
+            recipeRepository.getRecipes(
+                queryString = queryString,
+                onSuccess = ::onRecipesRetrievedSuccessfully,
+                onFailure = ::onRecipesRetrievalFailure
+            )
         }
     }
 

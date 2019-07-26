@@ -1,17 +1,14 @@
 package com.tsurkis.recipesearch.injection
 
+import android.app.Activity
 import android.content.Context
 import com.tsurkis.recipesearch.app.ThreadManager
 import com.tsurkis.recipesearch.app.ViewModelFactory
-import com.tsurkis.recipesearch.data.local.api.AppDatabase
-import com.tsurkis.recipesearch.data.local.api.RecipeDAO
-import com.tsurkis.recipesearch.data.local.api.RecipeDAOManager
+import com.tsurkis.recipesearch.custom.wrappers.ImageLoader
 import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPI
 import com.tsurkis.recipesearch.data.repository.RecipeRepository
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
-import retrofit2.Retrofit
-import java.lang.RuntimeException
-import java.util.concurrent.Executor
+import com.tsurkis.recipesearch.ui.screens.recipe.search.RecipeSearchActivity
 
 class Injector private constructor(
     private val applicationContextModule: ApplicationContextModule,
@@ -23,48 +20,17 @@ class Injector private constructor(
     private val viewModelFactoryModule: ViewModelFactoryModule
 ) {
 
-    private val utilsProvider: UtilsProvider = UtilsProvider(utilsModule = utilsModule)
-
-    private val threadManagerProvider: ThreadManagerProvider = ThreadManagerProvider(threadModule = ThreadModule())
-
-    private val remoteAPIProvider: RemoteAPIProvider =
-        RemoteAPIProvider(
-            remoteAPIModule = remoteAPIModule,
-            networkThread = threadModule.provideNetworkThread(),
-            converter = utilsProvider.converter
-        )
-
-    private val localApiProvider: LocalAPIProvider =
-        LocalAPIProvider(
-            localAPIModule = localAPIModule,
-            applicationContext = applicationContextModule.provideApplicationContext(),
-            converter = utilsProvider.converter
-        )
-
-    private val repositoryProvider: RepositoryProvider =
-        RepositoryProvider(
-            repositoryModule = repositoryModule,
-            recipeSearchAPI = remoteAPIProvider.recipeSearchAPI,
-            recipeDAOManager = localApiProvider.recipeDaoManager
-        )
-
-    private val viewModelFactoryProvider: ViewModelFactoryProvider =
-        ViewModelFactoryProvider(
-            viewModelFactoryModule = viewModelFactoryModule,
-            ioThread = threadManagerProvider.threadManager.ioThread,
-            recipeRepository = repositoryProvider.recipeRepository
-        )
-
     companion object {
 
         private var instance: Injector? = null
 
-        fun provider(): Injector {
-            instance ?: throw RuntimeException("Injector.instantiate method not called. Please initialize your Injector")
-            return instance!!
+        fun inject(): Injector {
+            return instance
+                ?: throw RuntimeException("Injector.instantiate method not called. Please initialize your Injector class")
         }
 
         fun instantiate(applicationContext: Context) {
+            if (instance != null) throw RuntimeException("Injector already initialized! Please do not use the instantiate method")
             instance =
                 Injector(
                     applicationContextModule = ApplicationContextModule(applicationContext = applicationContext),
@@ -78,84 +44,62 @@ class Injector private constructor(
         }
     }
 
-    fun provideViewModelFactory(): ViewModelFactory = viewModelFactoryProvider.viewModelFactory
-}
+    private val viewModelFactory: ViewModelFactory
 
-class ThreadManagerProvider(threadModule: ThreadModule) {
-    val threadManager: ThreadManager =
-        threadModule.provideThreadManager(
-            networkThread = threadModule.provideNetworkThread(),
-            ioThread = threadModule.provideIOThread()
+    private val imageLoader: ImageLoader
+
+    init {
+        val threadManager: ThreadManager =
+            threadModule.provideThreadManager(
+                networkThread = threadModule.provideNetworkThread(),
+                ioThread = threadModule.provideIOThread()
+            )
+
+        val recipeModelConverter: RecipeModelConverter = utilsModule.provideRecipeModuleConverter()
+
+        val recipeSearchAPI: RecipeSearchAPI = remoteAPIModule.provideRecipeSearchAPI(
+            api = remoteAPIModule.provideTheMealDBAPI(
+                retrofitClient = remoteAPIModule.provideRetrofit(
+                    okHttpClient = remoteAPIModule.provideOKHttpClient(
+                        loggingInterceptor = remoteAPIModule.provideInterceptor()
+                    ),
+                    converterFactory = remoteAPIModule.provideGsonConverterFactory(),
+                    remoteAPIBackThread = threadManager.networkThread
+                )
+            ),
+            converter = recipeModelConverter
         )
-}
 
-class UtilsProvider(utilsModule: UtilsModule) {
-    val converter: RecipeModelConverter = utilsModule.provideRecipeModuleConverter()
-}
+        val recipeDAOManager = localAPIModule.provideRecipeDAOManager(
+            recipeDao = localAPIModule.provideRecipeDao(
+                appDatabase = localAPIModule.provideAppDatabase(
+                    applicationContext = applicationContextModule.provideApplicationContext()
+                )
+            ),
+            converter = recipeModelConverter
+        )
 
-class RepositoryProvider(
-    repositoryModule: RepositoryModule,
-    recipeSearchAPI: RecipeSearchAPI,
-    recipeDAOManager: RecipeDAOManager
-) {
-    val recipeRepository: RecipeRepository =
-        repositoryModule.provideRecipeRepository(
+        val recipeRepository: RecipeRepository = repositoryModule.provideRecipeRepository(
             recipeRemoteAPI = recipeSearchAPI,
             recipeDAOManager = recipeDAOManager
         )
-}
 
-class ViewModelFactoryProvider(
-    viewModelFactoryModule: ViewModelFactoryModule,
-    ioThread: Executor,
-    recipeRepository: RecipeRepository
-) {
-    val viewModelFactory: ViewModelFactory =
-        viewModelFactoryModule.provideViewModelFactory(
-            backThread = ioThread,
+        viewModelFactory = viewModelFactoryModule.provideViewModelFactory(
+            backThread = threadManager.ioThread,
             recipeRepository = recipeRepository
         )
-}
 
-class RemoteAPIProvider(
-    remoteAPIModule: RemoteAPIModule,
-    networkThread: Executor,
-    converter: RecipeModelConverter
-) {
-    val retrofitClient: Retrofit =
-        remoteAPIModule.provideRetrofit(
-            okHttpClient = remoteAPIModule.provideOKHttpClient(
-                loggingInterceptor = remoteAPIModule.provideInterceptor()
-            ),
-            converterFactory = remoteAPIModule.provideGsonConverterFactory(),
-            remoteAPIBackThread = networkThread
+        imageLoader = utilsModule.provideImageLoaderWrapper(
+            imageLoaderInstance = utilsModule.provideImageLoaderInstance()
         )
+    }
 
-    val recipeSearchAPI: RecipeSearchAPI =
-        remoteAPIModule.provideRecipeSearchAPI(
-            api = remoteAPIModule.provideTheMealDBAPIAPI(
-                retrofitClient = retrofitClient
-            ),
-            converter = converter
-        )
-}
-
-class LocalAPIProvider(
-    localAPIModule: LocalAPIModule,
-    applicationContext: Context,
-    converter: RecipeModelConverter
-) {
-    val database: AppDatabase =
-        localAPIModule.provideAppDatabase(
-            applicationContext = applicationContext
-        )
-
-    val recipeDao: RecipeDAO =
-        localAPIModule.provideRecipeDao(database)
-
-    val recipeDaoManager: RecipeDAOManager =
-        localAPIModule.provideRecipeDAOManager(
-            recipeDao = recipeDao,
-            converter = converter
-        )
+    fun into(activity: Activity) {
+        when (activity) {
+            is RecipeSearchActivity -> {
+                activity.viewModelFactory = viewModelFactory
+                activity.imageLoader = imageLoader
+            }
+        }
+    }
 }

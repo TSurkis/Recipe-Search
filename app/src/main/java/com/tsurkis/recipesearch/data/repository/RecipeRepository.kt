@@ -13,7 +13,11 @@ class RecipeRepositoryImplementation(
     private val recipeDAOManager: RecipeDAOManager
 ) : RecipeRepository {
 
-    override fun getRecipes(queryString: String, onSuccess: (List<Recipe>) -> (Unit), onFailure: (Throwable) -> (Unit)) {
+    override fun getRecipes(
+        queryString: String,
+        onSuccess: (List<Recipe>) -> (Unit),
+        onFailure: (Throwable) -> (Unit)
+    ) {
         if (queryString.isNotEmpty()) {
             recipeSearchAPI
                 .searchRecipes(

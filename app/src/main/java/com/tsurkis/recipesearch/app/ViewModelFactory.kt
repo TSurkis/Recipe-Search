@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tsurkis.recipesearch.data.repository.RecipeRepository
 import com.tsurkis.recipesearch.ui.screens.recipe.search.RecipeSearchViewModel
-import java.lang.RuntimeException
 import java.util.concurrent.Executor
 
 class ViewModelFactory(
