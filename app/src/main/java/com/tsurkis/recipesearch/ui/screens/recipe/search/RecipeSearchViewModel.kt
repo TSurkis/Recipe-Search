@@ -30,7 +30,7 @@ class RecipeSearchViewModel(
 
     fun searchRecipes(queryString: String?) {
         val trimmedQueryString = queryString?.trim() ?: ""
-        if (trimmedQueryString.isNullOrBlank()) return
+        if (trimmedQueryString.isBlank()) return
         if (previousSearchQuery.equals(trimmedQueryString)) {
             return
         } else {

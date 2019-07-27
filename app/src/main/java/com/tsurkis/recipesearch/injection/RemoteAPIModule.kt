@@ -36,7 +36,7 @@ class RemoteAPIModule {
         Retrofit
             .Builder()
             .callbackExecutor(remoteAPIBackThread)
-            .baseUrl(BuildConfig.OPINIONATED_API_END_POINT)
+            .baseUrl(BuildConfig.API_END_POINT)
             .addConverterFactory(converterFactory)
             .client(okHttpClient)
             .build()
