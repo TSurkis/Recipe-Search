@@ -15,7 +15,7 @@ class RecipeSearchAPI private constructor() {
     }
 
     private val api: TheMealDBAPI = RetrofitClient.instance.core.create(TheMealDBAPI::class.java)
-    private val recipeModelConverter = RecipeModelConverter()
+    private val converter = RecipeModelConverter()
 
     fun searchRecipes(queryString: String, onSuccess: (List<Recipe>) -> (Unit), onFailure: (Throwable) -> (Unit)) {
         api
@@ -29,7 +29,7 @@ class RecipeSearchAPI private constructor() {
                     response
                         .body()
                         ?.let { recipeSearchResponse ->
-                            onSuccess(recipeModelConverter.fromServerModels(recipeSearchResponse.recipes))
+                            onSuccess(converter.fromServerModels(recipeSearchResponse.recipes))
                         }
                         ?: onFailure(Throwable())
                 }
