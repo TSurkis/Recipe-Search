@@ -14,6 +14,8 @@ class RecipeSearchViewModel : ViewModel() {
     var recipesSearchUIState: MutableLiveData<RecipesSearchUIState> = MutableLiveData()
         private set
 
+    private var previousSearchQuery: String? = null
+
     init {
         runOnBackThread {
             RecipeRepository
@@ -26,14 +28,19 @@ class RecipeSearchViewModel : ViewModel() {
     }
 
     fun searchRecipes(queryString: String?) {
-        if (queryString.isNullOrBlank()) return
-        this.recipesSearchUIState.value =
-            RecipesSearchUIState(showLoader = true)
+        val trimmedQueryString = queryString?.trim() ?: ""
+        if (trimmedQueryString.isBlank()) return
+        if (previousSearchQuery.equals(trimmedQueryString)) {
+            return
+        } else {
+            previousSearchQuery = trimmedQueryString
+        }
+        this.recipesSearchUIState.value = RecipesSearchUIState(showLoader = true)
         runOnBackThread {
             RecipeRepository
                 .instance
                 .getRecipes(
-                    queryString = queryString,
+                    queryString = trimmedQueryString,
                     onSuccess = ::onRecipesRetrievedSuccessfully,
                     onFailure = ::onRecipesRetrievalFailure
                 )

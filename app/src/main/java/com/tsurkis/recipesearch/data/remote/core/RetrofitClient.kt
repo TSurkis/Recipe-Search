@@ -28,7 +28,7 @@ class RetrofitClient private constructor() {
             Retrofit
                 .Builder()
                 .callbackExecutor(ThreadManager.instance.networkThread)
-                .baseUrl(BuildConfig.OPINIONATED_API_END_POINT)
+                .baseUrl(BuildConfig.API_END_POINT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build()

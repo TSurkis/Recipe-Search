@@ -23,7 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         buildTypes.each {
-            it.buildConfigField 'String', 'OPINIONATED_API_END_POINT', '"https://www.themealdb.com/api/json/v1/1/"'
+            it.buildConfigField 'String', 'API_END_POINT', '"https://www.themealdb.com/api/json/v1/1/"'
         }
     }
     compileOptions {
