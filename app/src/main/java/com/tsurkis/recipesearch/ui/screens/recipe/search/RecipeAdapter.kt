@@ -11,20 +11,15 @@ import com.tsurkis.recipesearch.custom.wrappers.ImageLoader
 import com.tsurkis.recipesearch.data.repository.model.Recipe
 import kotlinx.android.synthetic.main.item_recipe.view.*
 
-class RecipeAdapter : ListAdapter<Recipe, RecipeViewHolder>(RecipeDataComparator()) {
+class RecipeAdapter(private val imageLoader: ImageLoader) : ListAdapter<Recipe, RecipeViewHolder>(RecipeDataComparator()) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        val rootView =
-            LayoutInflater
-                .from(parent.context)
-                .inflate(
-                    R.layout.item_recipe, parent,
-                    false
-                )
+        val rootView = LayoutInflater.from(parent.context).inflate(R.layout.item_recipe, parent, false)
         return RecipeViewHolder(rootView)
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
-        holder.bind(recipe = getItem(position))
+        holder.bind(recipe = getItem(position), imageLoader = imageLoader)
     }
 }
 
@@ -32,13 +27,11 @@ class RecipeViewHolder(
     private val rootView: View
 ) : RecyclerView.ViewHolder(rootView) {
 
-    fun bind(recipe: Recipe) {
-        ImageLoader
-            .instance
-            .loadImage(
-                imageUrl = recipe.thumbnailUrl,
-                imageView = rootView.recipeImageView
-            )
+    fun bind(recipe: Recipe, imageLoader: ImageLoader) {
+        imageLoader.loadImage(
+            imageUrl = recipe.thumbnailUrl,
+            imageView = rootView.recipeImageView
+        )
         rootView.recipeNameTextView.text = recipe.name
     }
 }

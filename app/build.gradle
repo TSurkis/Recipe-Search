@@ -40,7 +40,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
+    testImplementation 'android.arch.core:core-testing:1.1.1'
+    
     // Kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.0.2'

@@ -3,16 +3,10 @@ package com.tsurkis.recipesearch.custom.wrappers
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 
-class ImageLoader private constructor() {
-
-    companion object {
-        val instance = ImageLoader()
-    }
-
-    private val picassoInstance: Picasso = Picasso.get()
+class ImageLoader(private val imageLoaderInstance: Picasso) {
 
     fun loadImage(imageUrl: String, imageView: ImageView) {
-        picassoInstance
+        imageLoaderInstance
             .load(imageUrl)
             .centerCrop()
             .fit()

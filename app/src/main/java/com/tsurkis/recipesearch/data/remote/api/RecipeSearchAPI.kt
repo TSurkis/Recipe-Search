@@ -1,6 +1,5 @@
 package com.tsurkis.recipesearch.data.remote.api
 
-import com.tsurkis.recipesearch.data.remote.core.RetrofitClient
 import com.tsurkis.recipesearch.data.remote.model.RecipeSearchResponse
 import com.tsurkis.recipesearch.data.repository.model.Recipe
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
@@ -8,16 +7,20 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+interface RecipeSearchAPI {
+    fun searchRecipes(queryString: String, onSuccess: (List<Recipe>) -> (Unit), onFailure: (Throwable) -> (Unit))
+}
 
-class RecipeSearchAPI private constructor() {
-    companion object {
-        val instance: RecipeSearchAPI = RecipeSearchAPI()
-    }
+class RecipeSearchAPIImplementation(
+    private val api: TheMealDBAPI,
+    private val converter: RecipeModelConverter
+) : RecipeSearchAPI {
 
-    private val api: TheMealDBAPI = RetrofitClient.instance.core.create(TheMealDBAPI::class.java)
-    private val converter = RecipeModelConverter()
-
-    fun searchRecipes(queryString: String, onSuccess: (List<Recipe>) -> (Unit), onFailure: (Throwable) -> (Unit)) {
+    override fun searchRecipes(
+        queryString: String,
+        onSuccess: (List<Recipe>) -> (Unit),
+        onFailure: (Throwable) -> (Unit)
+    ) {
         api
             .searchRecipes(queryString = queryString)
             .enqueue(object : Callback<RecipeSearchResponse?> {
