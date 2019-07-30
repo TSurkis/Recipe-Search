@@ -6,31 +6,25 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.tsurkis.recipesearch.R
-import com.tsurkis.recipesearch.app.ViewModelFactory
 import com.tsurkis.recipesearch.custom.wrappers.ImageLoader
-import com.tsurkis.recipesearch.injection.Injector
 import kotlinx.android.synthetic.main.activity_recipe_search.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RecipeSearchActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: RecipeSearchViewModel
+    private val recipeSearchViewModel: RecipeSearchViewModel by viewModel()
+    private val imageLoader: ImageLoader by inject()
+
     private lateinit var recipeAdapter: RecipeAdapter
-    lateinit var viewModelFactory: ViewModelFactory
-    lateinit var imageLoader: ImageLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Injector.inject().into(activity = this)
-
         setContentView(R.layout.activity_recipe_search)
         setSupportActionBar(toolbar)
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(RecipeSearchViewModel::class.java)
 
         initializeDataObservation()
         initializeUIStateObservation()
@@ -40,7 +34,7 @@ class RecipeSearchActivity : AppCompatActivity() {
     private fun initializeUI() {
         recipeSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(queryString: String?): Boolean {
-                viewModel.searchRecipes(queryString)
+                recipeSearchViewModel.searchRecipes(queryString)
                 return false
             }
 
@@ -52,7 +46,7 @@ class RecipeSearchActivity : AppCompatActivity() {
     }
 
     private fun initializeUIStateObservation() {
-        viewModel
+        recipeSearchViewModel
             .recipesSearchUIState
             .observe(
                 this,
@@ -92,7 +86,7 @@ class RecipeSearchActivity : AppCompatActivity() {
                     }
             this.adapter = this@RecipeSearchActivity.recipeAdapter
         }
-        viewModel
+        recipeSearchViewModel
             .recipes
             .observe(
                 this,

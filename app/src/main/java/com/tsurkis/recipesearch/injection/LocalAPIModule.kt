@@ -1,30 +1,33 @@
 package com.tsurkis.recipesearch.injection
 
-import android.content.Context
 import androidx.room.Room
 import com.tsurkis.recipesearch.data.local.api.*
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-class LocalAPIModule {
+val localAPIModule = module {
 
-    fun provideAppDatabase(applicationContext: Context): AppDatabase =
+    single {
         Room
             .databaseBuilder(
-                applicationContext,
+                androidContext(),
                 AppDatabase::class.java,
                 DatabaseNames.databaseName
             )
             .build()
+    } bind AppDatabase::class
 
-    fun provideRecipeDao(appDatabase: AppDatabase): RecipeDAO =
-        appDatabase.recipeDao()
+    single {
+        val database  = get<AppDatabase>()
+        database.recipeDao()
+    }
 
-    fun provideRecipeDAOManager(
-        recipeDao: RecipeDAO,
-        converter: RecipeModelConverter
-    ): RecipeDAOManager =
+    single {
         RecipeDAOManagerImplementation(
-            dao = recipeDao,
-            converter = converter
+            dao = get(),
+            converter = get()
         )
+    } bind RecipeDAOManager::class
 }

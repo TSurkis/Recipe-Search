@@ -1,21 +1,18 @@
 package com.tsurkis.recipesearch.injection
 
-import com.tsurkis.recipesearch.app.ThreadManager
-import java.util.concurrent.Executor
+import com.tsurkis.recipesearch.injection.DependencyNames.ioThread
+import com.tsurkis.recipesearch.injection.DependencyNames.networkThread
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import java.util.concurrent.Executors
 
-class ThreadModule {
+val threadModule = module {
 
-    fun provideIOThread(): Executor = Executors.newSingleThreadExecutor()
+    single(named(name = ioThread)) {
+        Executors.newSingleThreadExecutor()
+    }
 
-    fun provideNetworkThread(): Executor = Executors.newFixedThreadPool(3)
-
-    fun provideThreadManager(
-        networkThread: Executor,
-        ioThread: Executor
-    ): ThreadManager =
-        ThreadManager(
-            networkThread = networkThread,
-            ioThread = ioThread
-        )
+    single(named(name = networkThread)) {
+        Executors.newFixedThreadPool(3)
+    }
 }
