@@ -5,51 +5,55 @@ import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPI
 import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPIImplementation
 import com.tsurkis.recipesearch.data.remote.api.TheMealDBAPI
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
+import com.tsurkis.recipesearch.injection.DependencyNames.networkThread
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.Executor
 
-class RemoteAPIModule {
+val remoteAPIModule = module {
 
-    fun provideInterceptor(): HttpLoggingInterceptor =
+    single<HttpLoggingInterceptor> {
         HttpLoggingInterceptor()
             .apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             }
+    }
 
-    fun provideOKHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+    single<OkHttpClient> {
         OkHttpClient
             .Builder()
-            .addInterceptor(loggingInterceptor)
+            .addInterceptor(get<HttpLoggingInterceptor>())
             .build()
+    }
 
-    fun provideGsonConverterFactory(): Converter.Factory = GsonConverterFactory.create()
+    single<Converter.Factory> {
+        GsonConverterFactory.create()
+    }
 
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient,
-        remoteAPIBackThread: Executor,
-        converterFactory: Converter.Factory
-    ): Retrofit =
+    single<Retrofit> {
         Retrofit
             .Builder()
-            .callbackExecutor(remoteAPIBackThread)
+            .callbackExecutor(get<Executor>(named(name = networkThread)))
             .baseUrl(BuildConfig.API_END_POINT)
-            .addConverterFactory(converterFactory)
-            .client(okHttpClient)
+            .addConverterFactory(get<Converter.Factory>())
+            .client(get<OkHttpClient>())
             .build()
+    }
 
-    fun provideTheMealDBAPI(retrofitClient: Retrofit): TheMealDBAPI =
-        retrofitClient.create(TheMealDBAPI::class.java)
+    single<TheMealDBAPI> {
+        val retrofit = get<Retrofit>()
+        retrofit.create(TheMealDBAPI::class.java)
+    }
 
-    fun provideRecipeSearchAPI(
-        api: TheMealDBAPI,
-        converter: RecipeModelConverter
-    ): RecipeSearchAPI =
+    single<RecipeSearchAPI> {
         RecipeSearchAPIImplementation(
-            api = api,
-            converter = converter
+            api = get<TheMealDBAPI>(),
+            converter = get<RecipeModelConverter>()
         )
+    }
 }

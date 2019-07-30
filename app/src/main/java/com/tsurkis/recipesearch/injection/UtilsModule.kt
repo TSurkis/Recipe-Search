@@ -3,12 +3,19 @@ package com.tsurkis.recipesearch.injection
 import com.squareup.picasso.Picasso
 import com.tsurkis.recipesearch.custom.wrappers.ImageLoader
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
+import org.koin.dsl.module
 
-class UtilsModule {
+val utilsModule  = module {
 
-    fun provideRecipeModuleConverter(): RecipeModelConverter = RecipeModelConverter()
+    single<RecipeModelConverter> {
+        RecipeModelConverter()
+    }
 
-    fun provideImageLoaderInstance(): Picasso = Picasso.get()
+    single<Picasso> {
+        Picasso.get()
+    }
 
-    fun provideImageLoaderWrapper(imageLoaderInstance: Picasso) = ImageLoader(imageLoaderInstance = imageLoaderInstance)
+    single<ImageLoader> {
+        ImageLoader(imageLoaderInstance = get<Picasso>())
+    }
 }

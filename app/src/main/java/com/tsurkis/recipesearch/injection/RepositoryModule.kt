@@ -4,15 +4,14 @@ import com.tsurkis.recipesearch.data.local.api.RecipeDAOManager
 import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPI
 import com.tsurkis.recipesearch.data.repository.RecipeRepository
 import com.tsurkis.recipesearch.data.repository.RecipeRepositoryImplementation
+import org.koin.dsl.module
 
-class RepositoryModule {
+val repositoryModule = module {
 
-    fun provideRecipeRepository(
-        recipeRemoteAPI: RecipeSearchAPI,
-        recipeDAOManager: RecipeDAOManager
-    ): RecipeRepository =
+    single<RecipeRepository> {
         RecipeRepositoryImplementation(
-            recipeSearchAPI = recipeRemoteAPI,
-            recipeDAOManager = recipeDAOManager
+            recipeSearchAPI = get<RecipeSearchAPI>(),
+            recipeDAOManager = get<RecipeDAOManager>()
         )
+    }
 }
