@@ -1,12 +1,19 @@
 package com.tsurkis.recipesearch.app
 
-import android.app.Application
-import com.tsurkis.recipesearch.injection.Injector
+import com.tsurkis.recipesearch.injection.DaggerApplicationComponent
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 
-class RecipeSearchApp : Application() {
+class RecipeSearchApp : DaggerApplication() {
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        val applicationComponent =
+            DaggerApplicationComponent
+                .builder()
+                .application(applicationContext = this)
+                .build()
 
-    override fun onCreate() {
-        super.onCreate()
-        Injector.instantiate(applicationContext = applicationContext)
+        applicationComponent.inject(this)
+
+        return applicationComponent
     }
 }

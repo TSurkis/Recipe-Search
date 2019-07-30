@@ -3,11 +3,16 @@ package com.tsurkis.recipesearch.injection
 import android.content.Context
 import androidx.room.Room
 import com.tsurkis.recipesearch.data.local.api.*
-import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
 
+@Module
 class LocalAPIModule {
 
-    fun provideAppDatabase(applicationContext: Context): AppDatabase =
+    @Provides
+    @ApplicationScope
+    fun provideAppDatabase(@ApplicationContext applicationContext: Context): AppDatabase =
         Room
             .databaseBuilder(
                 applicationContext,
@@ -16,15 +21,16 @@ class LocalAPIModule {
             )
             .build()
 
+    @Provides
+    @ApplicationScope
     fun provideRecipeDao(appDatabase: AppDatabase): RecipeDAO =
         appDatabase.recipeDao()
+}
 
-    fun provideRecipeDAOManager(
-        recipeDao: RecipeDAO,
-        converter: RecipeModelConverter
-    ): RecipeDAOManager =
-        RecipeDAOManagerImplementation(
-            dao = recipeDao,
-            converter = converter
-        )
+@Module
+abstract class LocalAPIBindingModule {
+
+    @Binds
+    @ApplicationScope
+    abstract fun provideRecipeDAOManager(recipeDAOManagerImplementation: RecipeDAOManagerImplementation): RecipeDAOManager
 }

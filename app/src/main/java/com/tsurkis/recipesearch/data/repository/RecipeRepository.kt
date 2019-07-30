@@ -3,12 +3,13 @@ package com.tsurkis.recipesearch.data.repository
 import com.tsurkis.recipesearch.data.local.api.RecipeDAOManager
 import com.tsurkis.recipesearch.data.remote.api.RecipeSearchAPI
 import com.tsurkis.recipesearch.data.repository.model.Recipe
+import javax.inject.Inject
 
 interface RecipeRepository {
     fun getRecipes(queryString: String = "", onSuccess: (List<Recipe>) -> (Unit), onFailure: (Throwable) -> (Unit))
 }
 
-class RecipeRepositoryImplementation(
+class RecipeRepositoryImplementation @Inject constructor(
     private val recipeSearchAPI: RecipeSearchAPI,
     private val recipeDAOManager: RecipeDAOManager
 ) : RecipeRepository {

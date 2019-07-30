@@ -4,10 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsurkis.recipesearch.data.repository.RecipeRepository
 import com.tsurkis.recipesearch.data.repository.model.Recipe
+import com.tsurkis.recipesearch.injection.DependencyNames.ioThread
 import java.util.concurrent.Executor
+import javax.inject.Inject
+import javax.inject.Named
 
-class RecipeSearchViewModel(
-    private val backThread: Executor,
+class RecipeSearchViewModel @Inject constructor(
+    @Named(ioThread) val backThread: Executor,
     private val recipeRepository: RecipeRepository
 ) : ViewModel() {
 

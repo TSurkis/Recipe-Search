@@ -6,12 +6,13 @@ import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
 interface RecipeSearchAPI {
     fun searchRecipes(queryString: String, onSuccess: (List<Recipe>) -> (Unit), onFailure: (Throwable) -> (Unit))
 }
 
-class RecipeSearchAPIImplementation(
+class RecipeSearchAPIImplementation @Inject constructor(
     private val api: TheMealDBAPI,
     private val converter: RecipeModelConverter
 ) : RecipeSearchAPI {

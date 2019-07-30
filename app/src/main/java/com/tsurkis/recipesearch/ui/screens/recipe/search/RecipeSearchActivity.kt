@@ -12,21 +12,22 @@ import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.tsurkis.recipesearch.R
 import com.tsurkis.recipesearch.app.ViewModelFactory
 import com.tsurkis.recipesearch.custom.wrappers.ImageLoader
-import com.tsurkis.recipesearch.injection.Injector
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_recipe_search.*
+import javax.inject.Inject
 
 class RecipeSearchActivity : AppCompatActivity() {
 
     private lateinit var viewModel: RecipeSearchViewModel
     private lateinit var recipeAdapter: RecipeAdapter
+    @Inject
     lateinit var viewModelFactory: ViewModelFactory
+    @Inject
     lateinit var imageLoader: ImageLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Injector.inject().into(activity = this)
-
+        AndroidInjection.inject(this)
         setContentView(R.layout.activity_recipe_search)
         setSupportActionBar(toolbar)
 

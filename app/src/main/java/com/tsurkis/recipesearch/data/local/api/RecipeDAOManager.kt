@@ -2,13 +2,14 @@ package com.tsurkis.recipesearch.data.local.api
 
 import com.tsurkis.recipesearch.data.repository.model.Recipe
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
+import javax.inject.Inject
 
 interface RecipeDAOManager {
     fun save(recipes: List<Recipe>)
     fun retrieveLatest(): List<Recipe>
 }
 
-class RecipeDAOManagerImplementation(
+class RecipeDAOManagerImplementation @Inject constructor(
     private val dao: RecipeDAO,
     private val converter: RecipeModelConverter
 ) : RecipeDAOManager {
