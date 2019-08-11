@@ -4,11 +4,12 @@ import androidx.room.Room
 import com.tsurkis.recipesearch.data.local.api.*
 import com.tsurkis.recipesearch.data.repository.model.RecipeModelConverter
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val localAPIModule = module {
 
-    single<AppDatabase> {
+    single {
         Room
             .databaseBuilder(
                 androidContext(),
@@ -16,17 +17,17 @@ val localAPIModule = module {
                 DatabaseNames.databaseName
             )
             .build()
-    }
+    } bind AppDatabase::class
 
-    single<RecipeDAO> {
+    single {
         val database  = get<AppDatabase>()
         database.recipeDao()
     }
 
     single<RecipeDAOManager> {
         RecipeDAOManagerImplementation(
-            dao = get<RecipeDAO>(),
-            converter = get<RecipeModelConverter>()
+            dao = get(),
+            converter = get()
         )
-    }
+    } bind RecipeDAOManager::class
 }

@@ -9,6 +9,8 @@ import com.tsurkis.recipesearch.injection.DependencyNames.networkThread
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import retrofit2.Converter
 import retrofit2.Retrofit
@@ -17,25 +19,25 @@ import java.util.concurrent.Executor
 
 val remoteAPIModule = module {
 
-    single<HttpLoggingInterceptor> {
+    single {
         HttpLoggingInterceptor()
             .apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             }
-    }
+    } bind HttpLoggingInterceptor::class
 
-    single<OkHttpClient> {
+    single {
         OkHttpClient
             .Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
             .build()
-    }
+    } bind OkHttpClient::class
 
-    single<Converter.Factory> {
+    single {
         GsonConverterFactory.create()
-    }
+    } bind Converter.Factory::class
 
-    single<Retrofit> {
+    single {
         Retrofit
             .Builder()
             .callbackExecutor(get<Executor>(named(name = networkThread)))
@@ -43,17 +45,17 @@ val remoteAPIModule = module {
             .addConverterFactory(get<Converter.Factory>())
             .client(get<OkHttpClient>())
             .build()
-    }
+    } bind Retrofit::class
 
-    single<TheMealDBAPI> {
+    single {
         val retrofit = get<Retrofit>()
         retrofit.create(TheMealDBAPI::class.java)
-    }
+    } bind TheMealDBAPI::class
 
     single<RecipeSearchAPI> {
         RecipeSearchAPIImplementation(
-            api = get<TheMealDBAPI>(),
-            converter = get<RecipeModelConverter>()
+            api = get(),
+            converter = get()
         )
-    }
+    } bind RecipeSearchAPI::class
 }

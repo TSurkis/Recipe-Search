@@ -7,7 +7,7 @@ import org.koin.dsl.module
 
 val utilsModule  = module {
 
-    single<RecipeModelConverter> {
+    single {
         RecipeModelConverter()
     }
 
@@ -15,7 +15,7 @@ val utilsModule  = module {
         Picasso.get()
     }
 
-    single<ImageLoader> {
-        ImageLoader(imageLoaderInstance = get<Picasso>())
+    single {
+        ImageLoader(imageLoaderInstance = get())
     }
 }
