@@ -24,7 +24,7 @@ val localAPIModule = module {
         database.recipeDao()
     }
 
-    single<RecipeDAOManager> {
+    single {
         RecipeDAOManagerImplementation(
             dao = get(),
             converter = get()

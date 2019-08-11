@@ -52,7 +52,7 @@ val remoteAPIModule = module {
         retrofit.create(TheMealDBAPI::class.java)
     } bind TheMealDBAPI::class
 
-    single<RecipeSearchAPI> {
+    single {
         RecipeSearchAPIImplementation(
             api = get(),
             converter = get()
