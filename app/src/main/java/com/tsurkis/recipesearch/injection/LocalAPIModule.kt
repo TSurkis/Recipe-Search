@@ -20,8 +20,7 @@ val localAPIModule = module {
     } bind AppDatabase::class
 
     single {
-        val database  = get<AppDatabase>()
-        database.recipeDao()
+        get<AppDatabase>().recipeDao()
     }
 
     single {

@@ -48,8 +48,7 @@ val remoteAPIModule = module {
     } bind Retrofit::class
 
     single {
-        val retrofit = get<Retrofit>()
-        retrofit.create(TheMealDBAPI::class.java)
+        get<Retrofit>().create(TheMealDBAPI::class.java)
     } bind TheMealDBAPI::class
 
     single {
